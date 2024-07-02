@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC -g -shared -Wl,-soname,libort_utility.so -o libort_utility.so CMakeFiles/ort_utility.dir/ImageRecognitionOrtSessionHandlerBase.cpp.o  -lonnxruntime_LIBS-NOTFOUND 

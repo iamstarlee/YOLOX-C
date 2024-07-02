@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/whoami/Documents/codes/YOLOX-C/build/src",
+  "command": "/usr/bin/g++ -DENABLE_GPU=0 -DENABLE_TENSORRT=0 -Dort_utility_EXPORTS -I/home/whoami/Documents/codes/YOLOX-C/include -I/home/whoami/Documents/Hanvon/onnx_runtime_cpp/onnxruntime/include/onnxruntime -I/home/whoami/Documents/Hanvon/onnx_runtime_cpp/onnxruntime/include/onnxruntime/core/session -g -fPIC -DENABLE_DEBUG=1 -O0 -g -Wall -Werror -o CMakeFiles/ort_utility.dir/ImageRecognitionOrtSessionHandlerBase.cpp.o -c /home/whoami/Documents/codes/YOLOX-C/src/ImageRecognitionOrtSessionHandlerBase.cpp",
+  "file": "/home/whoami/Documents/codes/YOLOX-C/src/ImageRecognitionOrtSessionHandlerBase.cpp"
+}
+]
