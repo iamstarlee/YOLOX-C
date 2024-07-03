@@ -33,13 +33,7 @@ int main(int argc, char* argv[])
 
     const std::string ONNX_MODEL_PATH = argv[1];
     const std::string IMAGE_PATH = argv[2];
-
-    cv::Mat img = cv::imread(IMAGE_PATH);
-
-    if (img.empty()) {
-        std::cerr << "Failed to read input image" << std::endl;
-        return EXIT_FAILURE;
-    }
+    const std::string OUTPUT_PATH = "results";
 
     Ort::YoloX osh(
         NUM_CLASSES, ONNX_MODEL_PATH, 0,
@@ -48,9 +42,32 @@ int main(int argc, char* argv[])
     osh.initClassNames(MSCOCO_WITHOUT_BG_CLASSES);
 
     std::vector<float> dst(Ort::YoloX::IMG_CHANNEL * Ort::YoloX::IMG_H * Ort::YoloX::IMG_W);
-    auto result = processOneFrame(osh, img, dst.data(), CONFIDENCE_THRESHOLD);    
-    cv::imwrite("result.jpg", result);
 
+    // 遍历文件夹中的每个文件
+    namespace fs = std::filesystem;
+    std::vector<cv::Mat> images;
+    for (const auto& entry : fs::directory_iterator(IMAGE_PATH)) {
+        if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == ".jpeg") {
+            cv::Mat image = cv::imread(entry.path().string(), cv::IMREAD_UNCHANGED);
+             if (image.empty()) {
+                std::cerr << "Warning: Could not read image " << entry.path().string() << std::endl;
+                return EXIT_FAILURE;
+            }
+            else{
+                auto result = processOneFrame(osh, image, dst.data(), CONFIDENCE_THRESHOLD);
+                // 构造保存路径
+                std::string savePath = OUTPUT_PATH + "/" + entry.path().filename().string();
+                bool saved = cv::imwrite(savePath, result);
+                if (saved) {
+                    std::cout << "Saved image: " << savePath << std::endl;
+                } else {
+                    std::cerr << "Failed to save image: " << savePath << std::endl;
+                }
+            }
+            
+            
+        }
+    }
     return EXIT_SUCCESS;
 }
 
@@ -71,6 +88,9 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
     std::cout << "Elapsed time: " << exec_seconds.count() << "s" << std::endl;
 
     std::vector<Ort::YoloX::Object> objects = osh.decodeOutputs(inferenceOutput[0].first, confThresh);
+
+    // Judge whether objects are null
+    
 
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;

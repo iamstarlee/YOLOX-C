@@ -36,7 +36,8 @@ make gpu_apps
 wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_l.onnx -O ./data/yolox_l.onnx
 ```
 
-2. Test inference examples
+2. Test inference examples  
+put inference model in models/, test images in datas/, and the results images will be put in results/.
 ```bash
-./build/examples/yolox ./models/yolox_l.onnx ./data/matrix.jpg
+./build/examples/yolox ./models/yolox_l.onnx ./data
 ```
