@@ -10,7 +10,10 @@ sudo apt-get update
 sudo apt install -y --no-install-recommends zlib1g-dev
 
 readonly ONNXRUNTIME_VERSION="v1.14.1"
-# git clone --recursive -b ${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
+# If the downloading with link below is too slow, you can comment out this line, and download onnxruntimev1.14.1 manually
+# 如果下面的链接下载太慢，可以考虑手动下载并且将文件夹重命名为onnxruntime放到该文件夹下
+# https://github.com/microsoft/onnxruntime/tree/v1.14.1
+git clone --recursive -b ${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
 cd onnxruntime
 
 INSTALL_PREFIX="/usr/local"

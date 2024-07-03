@@ -7,7 +7,7 @@ install onnxruntime from source with the following script
     # onnxruntime needs newer cmake version to build
     bash ./scripts/install_latest_cmake.bash
 
-
+    # This place may be very slow, see the bash file for more detail.
     bash ./scripts/install_onnx_runtime.bash
 
     # dependencies to build apps
