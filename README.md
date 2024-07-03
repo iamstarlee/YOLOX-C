@@ -38,5 +38,5 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 
 2. Test inference examples
 ```bash
-./build/examples/yolox ./data/yolox_l.onnx ./data/images/matrix.jpg
+./build/examples/yolox ./models/yolox_l.onnx ./data/matrix.jpg
 ```
