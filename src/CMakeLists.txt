@@ -2,13 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 
 set(LIBRARY_NAME ${PROJECT_NAME})
 
-find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /home/whoami/Documents/Hanvon/onnx_runtime_cpp)
-
+find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
 
 file(GLOB SOURCE_FILES
-  ${PROJECT_SOURCE_DIR}/src/ImageClassificationOrtSessionHandler.cpp
   ${PROJECT_SOURCE_DIR}/src/ImageRecognitionOrtSessionHandlerBase.cpp
-  ${PROJECT_SOURCE_DIR}/src/ObjectDetectionOrtSessionHandler.cpp
   ${PROJECT_SOURCE_DIR}/src/OrtSessionHandler.cpp
 )
 
