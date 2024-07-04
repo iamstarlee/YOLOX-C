@@ -90,9 +90,6 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
 
     std::vector<Ort::YoloX::Object> objects = osh.decodeOutputs(inferenceOutput[0].first, confThresh);
 
-    // Judge whether objects are null
-    
-
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;
     std::vector<uint64_t> classIndices;
@@ -118,7 +115,7 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
 
     std::vector<std::array<float, 4>> afterNmsBboxes;
     std::vector<uint64_t> afterNmsClassIndices;
-    // try to catch error when bboxes are empty
+    // try to catch error when bboxes of objects are empty
     try {
         if (!bboxes.empty()) {
             auto afterNmsIndices = Ort::nms(bboxes, scores, confThresh);
