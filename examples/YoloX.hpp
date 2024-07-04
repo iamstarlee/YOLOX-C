@@ -14,7 +14,7 @@
 #include <opencv2/opencv.hpp>
 
 #include <ort_utility/ort_utility.hpp>
-
+#include <filesystem>
 namespace Ort
 {
 class YoloX : public ImageRecognitionOrtSessionHandlerBase
