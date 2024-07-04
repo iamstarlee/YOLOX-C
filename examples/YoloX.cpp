@@ -25,7 +25,7 @@ YoloX::YoloX(const uint16_t numClasses,     //
 YoloX::~YoloX()
 {
 }
-
+// padding and transposing
 void YoloX::preprocess(float* dst,                     //
                        const unsigned char* src,       //
                        const int64_t targetImgWidth,   //

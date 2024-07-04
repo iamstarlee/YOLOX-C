@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     const std::string IMAGE_PATH = argv[2];
     const std::string OUTPUT_PATH = "results";
 
+    // 实例化一个YoloX对象
     Ort::YoloX osh(
         NUM_CLASSES, ONNX_MODEL_PATH, 0,
         std::vector<std::vector<int64_t>>{{1, Ort::YoloX::IMG_CHANNEL, Ort::YoloX::IMG_H, Ort::YoloX::IMG_W}});
@@ -115,22 +116,27 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
         classIndices.emplace_back(object.label);
     }
 
-    
-    auto afterNmsIndices = Ort::nms(bboxes, scores, confThresh);
-
     std::vector<std::array<float, 4>> afterNmsBboxes;
     std::vector<uint64_t> afterNmsClassIndices;
+    // try to catch error when bboxes are empty
+    try {
+        if (!bboxes.empty()) {
+            auto afterNmsIndices = Ort::nms(bboxes, scores, confThresh);
 
-    afterNmsBboxes.reserve(afterNmsIndices.size());
-    afterNmsClassIndices.reserve(afterNmsIndices.size());
+            afterNmsBboxes.reserve(afterNmsIndices.size());
+            afterNmsClassIndices.reserve(afterNmsIndices.size());
 
-    for (const auto idx : afterNmsIndices) {
-        afterNmsBboxes.emplace_back(bboxes[idx]);
-        afterNmsClassIndices.emplace_back(classIndices[idx]);
+            for (const auto idx : afterNmsIndices) {
+                afterNmsBboxes.emplace_back(bboxes[idx]);
+                afterNmsClassIndices.emplace_back(classIndices[idx]);
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Caught exception: " << e.what() << std::endl;
     }
-
     return afterNmsBboxes.empty()
-               ? inputImg
-               : visualizeOneImage(inputImg, afterNmsBboxes, afterNmsClassIndices, COLORS, osh.classNames());
+                    ? inputImg
+                    : visualizeOneImage(inputImg, afterNmsBboxes, afterNmsClassIndices, COLORS, osh.classNames());
+    
 }
 }  // namespace
