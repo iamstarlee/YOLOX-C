@@ -6,6 +6,9 @@
  */
 
 
+#include <time.h>
+#include <iostream>
+
 #include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_c_api.h>
 #include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_cxx_api.h>
 
@@ -322,9 +325,13 @@ OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& i
             Ort::Value::CreateTensor<float>(memoryInfo, const_cast<float*>(inputData[i]), m_inputTensorSizes[i],
                                             m_inputShapes[i].data(), m_inputShapes[i].size())));
     }
-
+    
+    clock_t start,end;
+    start = clock();
     auto outputTensors = m_session.Run(Ort::RunOptions{nullptr}, m_inputNodeNames.data(), inputTensors.data(),
                                        m_numInputs, m_outputNodeNames.data(), m_numOutputs);
+    end = clock();
+    std::cout << "Elapsed time: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
 
     assert(outputTensors.size() == m_numOutputs);
     std::vector<DataOutputType> outputData;

@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
     std::vector<cv::Mat> images;
     for (const auto& entry : fs::directory_iterator(IMAGE_PATH)) {
         if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == ".jpeg") {
+            
+            
             cv::Mat image = cv::imread(entry.path().string(), cv::IMREAD_UNCHANGED);
              if (image.empty()) {
                 std::cerr << "Warning: Could not read image " << entry.path().string() << std::endl;
@@ -89,7 +91,7 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
     std::cout << "Elapsed time: " << exec_seconds.count() << "s" << std::endl;
 
     std::vector<Ort::YoloX::Object> objects = osh.decodeOutputs(inferenceOutput[0].first, confThresh);
-
+    std::cout << objects.size() << "\n";
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;
     std::vector<uint64_t> classIndices;
