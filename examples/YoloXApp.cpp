@@ -85,11 +85,11 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
     cv::resize(inputImg, scaledImg, cv::Size(Ort::YoloX::IMG_W, Ort::YoloX::IMG_H), 0, 0, cv::INTER_CUBIC);
     osh.preprocess(dst, scaledImg.data, Ort::YoloX::IMG_W, Ort::YoloX::IMG_H, 3);
 
-    auto start = std::chrono::system_clock::now();
+    clock_t start,end;
+    start = clock();
     auto inferenceOutput = osh({dst});
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> exec_seconds = end - start;
-    std::cout << "Elapsed time of inference: " << exec_seconds.count() << "s" << std::endl;
+    end = clock();
+    std::cout << "Elapsed time in inference: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
     
     // Print shape of output
     // std::cout << "osh outputs is " << inferenceOutput[0].second << "\n"; // osh outputs is 1 8400 85 
