@@ -37,3 +37,9 @@ add_subdirectory(src)
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
+
+# cmake通过指定环境变量能打印出编译和链接阶段的耗时情况
+set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
+set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
+
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -ggdb -Og -fPIC -w -Wl,--export-dynamic -Wno-deprecated -fpermissive -save-temps")
