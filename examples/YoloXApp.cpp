@@ -9,6 +9,7 @@
 
 #include "Utility.hpp"
 #include "YoloX.hpp"
+#include <time.h>
 
 static const std::vector<std::string> MSCOCO_WITHOUT_BG_CLASSES(Ort::MSCOCO_CLASSES.begin() + 1,
                                                                 Ort::MSCOCO_CLASSES.end());
@@ -88,10 +89,15 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
     auto inferenceOutput = osh({dst});
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> exec_seconds = end - start;
-    std::cout << "Elapsed time: " << exec_seconds.count() << "s" << std::endl;
-
+    std::cout << "Elapsed time of inference: " << exec_seconds.count() << "s" << std::endl;
+    
+    // Print shape of output
+    // std::cout << "osh outputs is " << inferenceOutput[0].second << "\n"; // osh outputs is 1 8400 85 
+    
     std::vector<Ort::YoloX::Object> objects = osh.decodeOutputs(inferenceOutput[0].first, confThresh);
-    std::cout << objects.size() << "\n";
+    
+    // std::cout << "objects size is " << objects.size() << "\n";
+    
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;
     std::vector<uint64_t> classIndices;
@@ -113,6 +119,11 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
         bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
         scores.emplace_back(object.prob);
         classIndices.emplace_back(object.label);
+
+        // Print label and prob
+        // std::cout << "object label is " << object.label << "\n";
+        // std::cout << "object prob is " << object.prob << "\n";
+        
     }
 
     std::vector<std::array<float, 4>> afterNmsBboxes;

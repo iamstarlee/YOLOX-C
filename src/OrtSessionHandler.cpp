@@ -331,7 +331,7 @@ OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& i
     auto outputTensors = m_session.Run(Ort::RunOptions{nullptr}, m_inputNodeNames.data(), inputTensors.data(),
                                        m_numInputs, m_outputNodeNames.data(), m_numOutputs);
     end = clock();
-    std::cout << "Elapsed time: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
+    std::cout << "Elapsed time in onnxruntm: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
 
     assert(outputTensors.size() == m_numOutputs);
     std::vector<DataOutputType> outputData;
