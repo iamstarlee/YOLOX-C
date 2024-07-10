@@ -9,8 +9,7 @@ list(APPEND PUBLIC_LIBS
   ${OpenCV_LIBS}
 )
 
-list(APPEND PRIVATE_LIBS
-)
+list(APPEND PRIVATE_LIBS)
 
 foreach(EXAMPLE ${EXAMPLES})
   __build_example(

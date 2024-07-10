@@ -51,7 +51,8 @@ int main(int argc, char* argv[])
     for (const auto& entry : fs::directory_iterator(IMAGE_PATH)) {
         if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == ".jpeg") {
             
-            
+            clock_t start,end;
+            start = clock();
             cv::Mat image = cv::imread(entry.path().string(), cv::IMREAD_UNCHANGED);
              if (image.empty()) {
                 std::cerr << "Warning: Could not read image " << entry.path().string() << std::endl;
@@ -68,7 +69,8 @@ int main(int argc, char* argv[])
                     std::cerr << "Failed to save image: " << savePath << std::endl;
                 }
             }
-            
+            end = clock();
+            std::cout << "Elapsed time in inference: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
             
         }
     }
@@ -85,11 +87,7 @@ cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* d
     cv::resize(inputImg, scaledImg, cv::Size(Ort::YoloX::IMG_W, Ort::YoloX::IMG_H), 0, 0, cv::INTER_CUBIC);
     osh.preprocess(dst, scaledImg.data, Ort::YoloX::IMG_W, Ort::YoloX::IMG_H, 3);
 
-    clock_t start,end;
-    start = clock();
     auto inferenceOutput = osh({dst});
-    end = clock();
-    std::cout << "Elapsed time in inference: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
     
     // Print shape of output
     // std::cout << "osh outputs is " << inferenceOutput[0].second << "\n"; // osh outputs is 1 8400 85 
