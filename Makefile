@@ -1,7 +1,7 @@
 BUILD_EXAMPLES=OFF
 BUILD_TYPE=Release
 CMAKE_ARGS:=$(CMAKE_ARGS)
-USE_GPU=OFF
+USE_GPU=ON
 
 default:
 	@mkdir -p build
