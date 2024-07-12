@@ -1,1 +1,2 @@
-This is where you put onnxruntime-v1.14.1, remember to rename the file to onnxruntime to make your life better.
+This is where you put onnxruntime-linux-x64-1.14.1.tgz, remember to rename the file to onnxruntime to make your life better.
+If you want to use cuda, you need to download and compile onnxruntime-linux-x64-gpu-1.14.1.tgz
