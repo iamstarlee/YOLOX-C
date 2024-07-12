@@ -15,6 +15,7 @@ find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
 
 find_package(CUDA QUIET)
 
+# message(${CUDA_FOUND})
 if(CUDA_FOUND AND USE_GPU)
   add_definitions(-DENABLE_GPU=1)
   include(tensorrt)
