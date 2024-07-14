@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  set(CMAKE_CUDA_ARCHITECTURES 75)
+endif()
+
 project(ort_utility VERSION 0.0.2)
-set (CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_ARCHITECTURES 60 61 70 75 80 86)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -15,7 +22,22 @@ find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
 
 find_package(CUDA QUIET)
 
-# message(${CUDA_FOUND})
+enable_language(CUDA)
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    message(STATUS "Find CUDA !")
+else()
+    message(FATAL_ERROR "Not found CUDA!")
+endif()
+
+
+if(NOT DEFINED USE_GPU)
+  set(USE_GPU ON)
+endif()
+
+message(STATUS "USE_GPU: ${USE_GPU}")
+
 if(CUDA_FOUND AND USE_GPU)
   add_definitions(-DENABLE_GPU=1)
   include(tensorrt)
@@ -34,10 +56,7 @@ add_compile_options(
 )
 
 add_subdirectory(src)
-
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
+add_subdirectory(examples)
 
 # cmake通过指定环境变量能打印出编译和链接阶段的耗时情况
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
