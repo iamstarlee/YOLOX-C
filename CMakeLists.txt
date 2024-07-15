@@ -40,13 +40,8 @@ message(STATUS "USE_GPU: ${USE_GPU}")
 
 if(CUDA_FOUND AND USE_GPU)
   add_definitions(-DENABLE_GPU=1)
-  include(tensorrt)
-  if (TENSORRT_FOUND)
-    add_definitions(-DENABLE_TENSORRT=1)
-  endif()
 else()
   add_definitions(-DENABLE_GPU=0)
-  add_definitions(-DENABLE_TENSORRT=0)
 endif()
 
 
