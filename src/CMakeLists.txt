@@ -9,6 +9,7 @@ file(GLOB SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/src/OrtSessionHandler.cpp
 )
 
+include_directories(/home/whoami/Documents/codes/YOLOX-C/onnxruntime/include/onnxruntime/ /home/whoami/Documents/codes/YOLOX-C/onnxruntime/onnxruntime/)
 add_library(${LIBRARY_NAME}
   SHARED
      ${SOURCE_FILES}
