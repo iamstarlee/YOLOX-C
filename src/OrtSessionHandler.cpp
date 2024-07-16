@@ -9,13 +9,11 @@
 #include <time.h>
 #include <iostream>
 
-#include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_c_api.h>
-#include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_cxx_api.h>
+#include <onnxruntime/core/session/onnxruntime_cxx_api.h>
 
-
-#if ENABLE_TENSORRT
-#include <onnxruntime/core/providers/tensorrt/tensorrt_provider_factory.h>
-#endif
+// #include <../onnxruntime/include/onnxruntime/core/providers/cuda/cuda_provider_options.h>
+// #include </usr/local/cuda/include/cuda_runtime.h>
+// #include </usr/local/cuda/include/cuda.h>
 
 #include <ort_utility/ort_utility.hpp>
 
@@ -218,19 +216,21 @@ void OrtSessionHandler::OrtSessionHandlerIml::initSession()
     Ort::SessionOptions sessionOptions;
 
     sessionOptions.SetIntraOpNumThreads(1);
+    // sessionOptions.SetInterOpNumThreads(1); // much longer
     // tensorrt options can be customized into sessionOptions
     // https://onnxruntime.ai/docs/execution-providers/TensorRT-ExecutionProvider.html
 
 #if ENABLE_GPU
     if (m_gpuIdx.has_value()) {
+        std::cout << "Hello World" << "\n";
         Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, m_gpuIdx.value()));
 #if ENABLE_TENSORRT
         Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_Tensorrt(sessionOptions, m_gpuIdx.value()));
 #endif
     }
 #endif
-
-    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+    
+    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL); // ORT_ENABLE_ALL ORT_DISABLE_ALL
     m_session = Ort::Session(m_env, m_modelPath.c_str(), sessionOptions);
     m_numInputs = m_session.GetInputCount();
     DEBUG_LOG("Model number of inputs: %d\n", m_numInputs);
@@ -243,6 +243,7 @@ void OrtSessionHandler::OrtSessionHandlerIml::initSession()
 
     m_outputNodeNames.reserve(m_numOutputs);
     m_outputTensorSizes.reserve(m_numOutputs);
+    std::cout << "Initialization is over" << "\n";
 }
 
 void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
@@ -310,6 +311,8 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
 std::vector<OrtSessionHandler::DataOutputType>
 OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData) const
 {
+    clock_t start, end, end1, end2;
+    start = clock();
     if (m_numInputs != inputData.size()) {
         DEBUG_LOG("m_numInputs:%d, input size:%ld", m_numInputs, inputData.size());
         throw std::runtime_error("Mismatch size of input data");
@@ -320,18 +323,20 @@ OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& i
     std::vector<Ort::Value> inputTensors;
     inputTensors.reserve(m_numInputs);
 
+    // For CPU
     for (int i = 0; i < m_numInputs; ++i) {
         inputTensors.emplace_back(std::move(
             Ort::Value::CreateTensor<float>(memoryInfo, const_cast<float*>(inputData[i]), m_inputTensorSizes[i],
                                             m_inputShapes[i].data(), m_inputShapes[i].size())));
     }
     
-    clock_t start,end;
-    start = clock();
+    end = clock();
+    std::cout << "Elapsed time before onnxruntime: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
+
     auto outputTensors = m_session.Run(Ort::RunOptions{nullptr}, m_inputNodeNames.data(), inputTensors.data(),
                                        m_numInputs, m_outputNodeNames.data(), m_numOutputs);
-    end = clock();
-    std::cout << "Elapsed time in onnxruntm: " << (double)(end-start)/CLOCKS_PER_SEC << "s" << std::endl;
+    end1 = clock();
+    std::cout << "Elapsed time in onnxruntime: " << (double)(end1-end)/CLOCKS_PER_SEC << "s" << std::endl;
 
     assert(outputTensors.size() == m_numOutputs);
     std::vector<DataOutputType> outputData;
@@ -343,6 +348,8 @@ OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& i
         outputData.emplace_back(
             std::make_pair(std::move(elem.GetTensorMutableData<float>()), elem.GetTensorTypeAndShapeInfo().GetShape()));
     }
+    end2 = clock();
+    std::cout << "Elapsed time after onnxruntime: " << (double)(end2-end1)/CLOCKS_PER_SEC << "s" << std::endl;
 
     return outputData;
 }
